@@ -1,0 +1,72 @@
+{
+  "features_meteo": [
+    "solar_rad_total",
+    "solar_rad_max",
+    "precipitation_total",
+    "temp_2m_max",
+    "temp_2m_min",
+    "temp_2m_mean",
+    "cloud_cover_mean",
+    "wind_u_mean",
+    "wind_v_mean",
+    "pressure_mean",
+    "boundary_layer_height_mean",
+    "boundary_layer_height_max",
+    "cape_mean",
+    "cape_max",
+    "skin_temp_max",
+    "skin_temp_min",
+    "skin_temp_mean",
+    "temp_differential",
+    "wind_speed_mean"
+  ],
+  "top_features_correlacion": [
+    "boundary_layer_height_max",
+    "skin_temp_max",
+    "temp_differential",
+    "temp_2m_max",
+    "skin_temp_mean",
+    "temp_2m_mean",
+    "solar_rad_total",
+    "solar_rad_max",
+    "cape_max",
+    "skin_temp_min"
+  ],
+  "targets_numericos": [
+    "altura_max_m",
+    "duracion_min",
+    "distancia_km"
+  ],
+  "estadisticos_targets": {
+    "altura_max_m": {
+      "count": 309.0,
+      "mean": 2224.546925566343,
+      "std": 3605.9375136708395,
+      "min": 562.0,
+      "25%": 1704.0,
+      "50%": 1993.0,
+      "75%": 2292.0,
+      "max": 64500.0
+    },
+    "duracion_min": {
+      "count": 309.0,
+      "mean": 197.48867313915858,
+      "std": 72.14806678017673,
+      "min": 13.2,
+      "25%": 156.1,
+      "50%": 204.4,
+      "75%": 240.8,
+      "max": 370.3
+    },
+    "distancia_km": {
+      "count": 309.0,
+      "mean": 393.5385113268609,
+      "std": 169.19547205912195,
+      "min": 12.1,
+      "25%": 284.4,
+      "50%": 398.4,
+      "75%": 509.1,
+      "max": 864.6
+    }
+  }
+}
