@@ -1,18 +1,19 @@
 """
-Script para combinar datos de vuelos y meteorología en un dataset final
+Script CORREGIDO para combinar datasets
+Mantiene TODAS las features sin hacer splits
 """
 
 import pandas as pd
 import numpy as np
 import os
 
-def combinar_datasets():
+def combinar_datasets_completo():
     """
-    Combina metadata de vuelos con datos meteorológicos
+    Combina vuelos y meteorología manteniendo TODAS las columnas
     """
     
     print("="*70)
-    print("COMBINACIÓN DE DATASETS")
+    print("COMBINACIÓN DE DATASETS - TODAS LAS FEATURES")
     print("="*70)
     
     # Cargar datos
@@ -27,32 +28,36 @@ def combinar_datasets():
     
     if not os.path.exists(meteo_file):
         print(f"ERROR: No se encuentra {meteo_file}")
-        print("Ejecuta primero: python 02_descargar_era5.py")
         return None
     
     df_vuelos = pd.read_csv(vuelos_file)
     df_meteo = pd.read_csv(meteo_file)
     
+    print(f"  Vuelos cargados: {len(df_vuelos)} filas, {len(df_vuelos.columns)} columnas")
+    print(f"  Meteo cargados: {len(df_meteo)} filas, {len(df_meteo.columns)} columnas")
+    
     # Convertir fechas
     df_vuelos['fecha'] = pd.to_datetime(df_vuelos['fecha']).dt.date
     df_meteo['fecha'] = pd.to_datetime(df_meteo['fecha']).dt.date
     
-    print(f"  Vuelos: {len(df_vuelos)} registros")
-    print(f"  Datos meteo: {len(df_meteo)} días")
+    print(f"\nFechas únicas en vuelos: {df_vuelos['fecha'].nunique()}")
+    print(f"Fechas únicas en meteorología: {df_meteo['fecha'].nunique()}")
     
-    # Combinar por fecha
-    print("\nCombinando por fecha...")
+    # Combinar por fecha (INNER JOIN para tener solo fechas con ambos datos)
+    print("\nCombinando por fecha (inner join)...")
     df_combined = pd.merge(
         df_vuelos,
         df_meteo,
         on='fecha',
-        how='inner'
+        how='inner',
+        suffixes=('_vuelo', '_meteo')  # Por si hay columnas repetidas
     )
     
-    print(f"  Registros combinados: {len(df_combined)}")
+    print(f"  ✓ Registros combinados: {len(df_combined)}")
+    print(f"  ✓ Total de columnas: {len(df_combined.columns)}")
     
     # Crear variable de clasificación: calidad_dia
-    print("\nCreando variable de clasificación...")
+    print("\nCreando variable target 'calidad_dia'...")
     
     def clasificar_dia(altura_max):
         if pd.isna(altura_max):
@@ -72,131 +77,136 @@ def combinar_datasets():
     print("\nDistribución de calidad de días:")
     print(df_combined['calidad_dia'].value_counts().sort_index())
     
-    # Agregar features derivadas adicionales
-    print("\nAgregando features derivadas...")
-    
-    # Mes y día del año (para estacionalidad)
+    # Agregar features temporales útiles
+    print("\nAgregando features temporales...")
     df_combined['fecha_dt'] = pd.to_datetime(df_combined['fecha'])
     df_combined['mes'] = df_combined['fecha_dt'].dt.month
     df_combined['dia_año'] = df_combined['fecha_dt'].dt.dayofyear
+    df_combined['dia_semana'] = df_combined['fecha_dt'].dt.dayofweek
+    df_combined['año'] = df_combined['fecha_dt'].dt.year
     
-    # Seleccionar columnas finales
-    # Features meteorológicas
-    features_meteo = [col for col in df_meteo.columns if col != 'fecha']
-    
-    # Targets
-    targets = [
-        'altura_max_m',
-        'ganancia_altura_m',
-        'duracion_min',
-        'distancia_km',
-        'calidad_dia'
-    ]
-    
-    # Metadata útil
-    metadata = [
-        'flight_id',
-        'fecha',
-        'pilot',
-        'glider',
-        'mes',
-        'dia_año'
-    ]
-    
-    # Columnas finales
-    columnas_finales = metadata + features_meteo + targets
-    df_final = df_combined[columnas_finales].copy()
-    
-    # Eliminar filas con valores faltantes en targets importantes
+    # Eliminar filas con valores faltantes en targets principales
     print("\nLimpiando datos...")
-    antes = len(df_final)
-    df_final = df_final.dropna(subset=targets[:-1])  # No dropear por calidad_dia
-    despues = len(df_final)
+    antes = len(df_combined)
+    
+    # Solo eliminar si faltan targets críticos
+    targets_criticos = ['altura_max_m', 'duracion_min', 'distancia_km']
+    df_combined = df_combined.dropna(subset=targets_criticos)
+    
+    despues = len(df_combined)
     print(f"  Filas eliminadas por NaN en targets: {antes - despues}")
     
-    # Guardar dataset procesado
+    # Guardar dataset completo
     os.makedirs('data/processed', exist_ok=True)
     output_file = 'data/processed/dataset_completo.csv'
-    df_final.to_csv(output_file, index=False)
+    df_combined.to_csv(output_file, index=False)
     
     print(f"\n✓ Dataset final guardado: {output_file}")
-    print(f"  Registros: {len(df_final)}")
-    print(f"  Features: {len(features_meteo)}")
-    print(f"  Targets: {len(targets)}")
+    print(f"  Vuelos: {len(df_combined)}")
+    print(f"  Features totales: {len(df_combined.columns)}")
+    
+    # Mostrar categorías de features
+    print("\n" + "="*70)
+    print("CATEGORÍAS DE FEATURES EN EL DATASET")
+    print("="*70)
+    
+    # Identificar categorías
+    features_vuelo = [col for col in df_combined.columns if col in df_vuelos.columns and col != 'fecha']
+    features_meteo = [col for col in df_combined.columns if col in df_meteo.columns and col != 'fecha']
+    features_derivadas = ['calidad_dia', 'mes', 'dia_año', 'dia_semana', 'año', 'fecha_dt']
+    
+    print(f"\n📊 Features de VUELO (del IGC): {len(features_vuelo)}")
+    print("   Categorías:")
+    print("   • Básicas: altura, duración, distancia, velocidad")
+    print("   • Térmicas: número, intensidad, altura, duración")
+    print("   • Trayectoria: rumbo, velocidad ground")
+    print("   • Temporales: franjas horarias")
+    print("   • Espaciales: bounding box, área")
+    print("   • Variabilidad: std, coeficientes")
+    
+    print(f"\n🌤️  Features METEOROLÓGICAS (de ERA5): {len(features_meteo)}")
+    print("   Variables:")
+    print("   • Temperatura: max, min, mean, differential")
+    print("   • Radiación solar: total, max")
+    print("   • Viento: componentes U/V, velocidad")
+    print("   • CAPE: max, mean")
+    print("   • Capa límite: altura max, mean")
+    print("   • Nubes, presión, precipitación")
+    
+    print(f"\n🎯 Features DERIVADAS: {len(features_derivadas)}")
+    print("   • calidad_dia (target clasificación)")
+    print("   • mes, dia_año, dia_semana, año")
+    
+    print(f"\n📈 TOTAL FEATURES: {len(df_combined.columns)}")
     
     # Resumen estadístico
     print("\n" + "="*70)
-    print("RESUMEN ESTADÍSTICO DEL DATASET FINAL")
+    print("RESUMEN ESTADÍSTICO - TARGETS PRINCIPALES")
     print("="*70)
     
-    print("\nVariables Target:")
-    print(df_final[targets[:-1]].describe())
+    targets = ['altura_max_m', 'duracion_min', 'distancia_km', 
+               'num_termicas', 'intensidad_termicas_mean_ms',
+               'temp_2m_max', 'cape_max', 'solar_rad_max']
     
-    print("\nVariables Meteorológicas (primeras 5):")
-    print(df_final[features_meteo[:5]].describe())
+    targets_disponibles = [t for t in targets if t in df_combined.columns]
     
-    return df_final
-
-
-def dividir_train_test(df, test_size=0.2, random_state=42):
-    """
-    Dividir en conjunto de desarrollo y test
-    """
-    from sklearn.model_selection import train_test_split
+    if targets_disponibles:
+        print("\n")
+        print(df_combined[targets_disponibles].describe())
+    
+    # Info sobre valores faltantes
+    print("\n" + "="*70)
+    print("VALORES FALTANTES")
+    print("="*70)
+    
+    missing = df_combined.isnull().sum()
+    missing = missing[missing > 0].sort_values(ascending=False)
+    
+    if len(missing) > 0:
+        print(f"\nColumnas con valores faltantes: {len(missing)}")
+        print("\nTop 10:")
+        for col, count in missing.head(10).items():
+            pct = count / len(df_combined) * 100
+            print(f"  {col}: {count} ({pct:.1f}%)")
+    else:
+        print("\n✓ No hay valores faltantes")
+    
+    # Guardar lista de columnas para referencia
+    with open('data/processed/columnas_dataset.txt', 'w') as f:
+        f.write("COLUMNAS DEL DATASET COMPLETO\n")
+        f.write("="*70 + "\n\n")
+        
+        f.write(f"FEATURES DE VUELO ({len(features_vuelo)}):\n")
+        for col in sorted(features_vuelo):
+            f.write(f"  - {col}\n")
+        
+        f.write(f"\nFEATURES METEOROLÓGICAS ({len(features_meteo)}):\n")
+        for col in sorted(features_meteo):
+            f.write(f"  - {col}\n")
+        
+        f.write(f"\nFEATURES DERIVADAS ({len(features_derivadas)}):\n")
+        for col in features_derivadas:
+            f.write(f"  - {col}\n")
+        
+        f.write(f"\nTOTAL: {len(df_combined.columns)} columnas\n")
+    
+    print("\n✓ Lista de columnas guardada: data/processed/columnas_dataset.txt")
     
     print("\n" + "="*70)
-    print("DIVISIÓN EN DESARROLLO Y TEST")
+    print("✓✓✓ DATASET COMPLETO CREADO ✓✓✓")
+    print("="*70)
+    print("\nArchivo generado:")
+    print(f"  • data/processed/dataset_completo.csv")
+    print(f"    {len(df_combined)} filas × {len(df_combined.columns)} columnas")
+    print("\nEste dataset tiene TODAS las features de:")
+    print("  ✓ Vuelos (IGC processing)")
+    print("  ✓ Meteorología (ERA5)")
+    print("  ✓ Features derivadas")
+    print("\n¡Listo para análisis exploratorio y feature engineering!")
     print("="*70)
     
-    # Split estratificado por calidad_dia
-    df_dev, df_test = train_test_split(
-        df,
-        test_size=test_size,
-        random_state=random_state,
-        stratify=df['calidad_dia']
-    )
-    
-    print(f"\nDataset desarrollo: {len(df_dev)} ({(1-test_size)*100:.0f}%)")
-    print(f"Dataset test: {len(df_test)} ({test_size*100:.0f}%)")
-    
-    # Verificar distribución de clases
-    print("\nDistribución en desarrollo:")
-    print(df_dev['calidad_dia'].value_counts(normalize=True).sort_index())
-    
-    print("\nDistribución en test:")
-    print(df_test['calidad_dia'].value_counts(normalize=True).sort_index())
-    
-    # Guardar
-    df_dev.to_csv('data/processed/vuelos_dev.csv', index=False)
-    df_test.to_csv('data/processed/vuelos_test.csv', index=False)
-    
-    print("\n✓ Datasets guardados:")
-    print("  - data/processed/vuelos_dev.csv")
-    print("  - data/processed/vuelos_test.csv")
-    
-    return df_dev, df_test
+    return df_combined
 
-
-# ============================================================================
-# SCRIPT PRINCIPAL
-# ============================================================================
 
 if __name__ == "__main__":
-    
-    # Combinar datasets
-    df_final = combinar_datasets()
-    
-    if df_final is not None:
-        # Dividir en dev y test
-        df_dev, df_test = dividir_train_test(df_final, test_size=0.2)
-        
-        print("\n" + "="*70)
-        print("✓ FASE 3 COMPLETADA: Dataset final creado")
-        print("="*70)
-        print("\nArchivos generados:")
-        print("  1. data/processed/dataset_completo.csv")
-        print("  2. data/processed/vuelos_dev.csv")
-        print("  3. data/processed/vuelos_test.csv")
-        print("\nSiguiente paso: Análisis exploratorio de datos (EDA)")
-        print("  Ejecuta: jupyter notebook")
-        print("  Y abre: notebooks/01_analisis_exploratorio.ipynb")
+    df = combinar_datasets_completo()
