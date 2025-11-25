@@ -1,13 +1,12 @@
 """
-preprocessing.py
-Funciones de preprocesamiento de datos con prevención de data leakage
+Módulo de preprocesamiento
+Funciones reutilizables para limpieza y transformación de datos
 """
 
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, RobustScaler, MinMaxScaler
 from sklearn.impute import SimpleImputer
-from typing import Tuple, List, Dict
 import warnings
 warnings.filterwarnings('ignore')
 
