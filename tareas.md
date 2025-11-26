@@ -3,4 +3,4 @@
 - revisar pre procesamiento
 - mandarle mail para confirmar reunion con juan
 - mandarle mail a palazzo para que quede por escrito el cambio en la consigna
-- 
+- lat y lon pasarlo a segun el tipo de aeropuerto
