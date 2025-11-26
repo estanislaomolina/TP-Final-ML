@@ -5,6 +5,7 @@ Funciones reutilizables para limpieza y transformación de datos
 
 import pandas as pd
 import numpy as np
+from scipy import stats
 from sklearn.preprocessing import StandardScaler, RobustScaler, MinMaxScaler
 from sklearn.impute import SimpleImputer
 import warnings
@@ -191,20 +192,7 @@ class PreprocessingPipeline:
     def scale_features(self, train_df, val_df, features_to_scale, method='robust'):
         """
         Normalización/Estandarización de features
-        
-        Parameters:
-        -----------
-        train_df, val_df : DataFrame
-        features_to_scale : list
-            Lista de columnas a escalar
-        method : str
-            'standard', 'robust', o 'minmax'
-        
-        Returns:
-        --------
-        train_scaled, val_scaled, scaler
         """
-        
         if method == 'standard':
             scaler = StandardScaler()
         elif method == 'robust':
@@ -213,13 +201,26 @@ class PreprocessingPipeline:
             scaler = MinMaxScaler()
         else:
             raise ValueError(f"Método '{method}' no reconocido")
-        
-        # Fit solo con train, transform ambos
-        train_df[features_to_scale] = scaler.fit_transform(train_df[features_to_scale])
-        val_df[features_to_scale] = scaler.transform(val_df[features_to_scale])
-        
+
+        if not hasattr(self, 'scaler_fill_values'):
+            self.scaler_fill_values = {}
+
+        train_numeric = train_df[features_to_scale].apply(pd.to_numeric, errors='coerce')
+        val_numeric = val_df[features_to_scale].apply(pd.to_numeric, errors='coerce')
+
+        train_numeric = train_numeric.replace([np.inf, -np.inf], np.nan)
+        val_numeric = val_numeric.replace([np.inf, -np.inf], np.nan)
+
+        fill_values = train_numeric.median()
+        train_numeric = train_numeric.fillna(fill_values)
+        val_numeric = val_numeric.fillna(fill_values)
+
+        train_df[features_to_scale] = scaler.fit_transform(train_numeric)
+        val_df[features_to_scale] = scaler.transform(val_numeric)
+
         self.scalers[method] = scaler
-        
+        self.scaler_fill_values[method] = fill_values
+
         return train_df, val_df, scaler
 
 
