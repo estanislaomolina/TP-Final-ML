@@ -150,14 +150,6 @@ def plot_feature_distributions(df: pd.DataFrame,
             continue
         
         axes[i].hist(clean_series, bins=30, edgecolor='black', alpha=0.7)
-        data = df[feature].dropna()
-        
-        if len(data) == 0:
-            axes[i].text(0.5, 0.5, 'Sin datos', ha='center', va='center')
-            axes[i].set_title(feature)
-            continue
-        
-        axes[i].hist(data, bins=30, edgecolor='black', alpha=0.7)
         axes[i].set_xlabel(feature)
         axes[i].set_ylabel('Frecuencia')
         axes[i].set_title(feature)
@@ -296,19 +288,25 @@ def plot_scatter_matrix_with_target(df: pd.DataFrame,
     correlations = df[[target] + top_features].corr()[target]
     
     for i, feature in enumerate(top_features):
-        axes[i].scatter(df[feature], df[target], alpha=0.5, s=20)
+        pair_df = df[[feature, target]].replace([np.inf, -np.inf], np.nan).dropna()
+        
+        if pair_df.empty:
+            axes[i].text(0.5, 0.5, 'Sin datos válidos', ha='center', va='center')
+            axes[i].set_title(feature)
+            axes[i].axis('off')
+            continue
+        
+        axes[i].scatter(pair_df[feature], pair_df[target], alpha=0.5, s=20)
         axes[i].set_xlabel(feature)
         axes[i].set_ylabel(target)
         
-        corr_val = correlations[feature]
-        axes[i].set_title(f'{feature}\n(r = {corr_val:.3f})')
+        corr_val = pair_df[feature].corr(pair_df[target])
+        axes[i].set_title(f'{feature}\n(r = {corr_val:.3f})' if pd.notna(corr_val) else feature)
         
-        # Línea de tendencia
-        if df[feature].notna().any() and df[target].notna().any():
-            z = np.polyfit(df[feature].dropna(), 
-                          df[target].dropna(), 1)
+        if len(pair_df) >= 2:
+            z = np.polyfit(pair_df[feature], pair_df[target], 1)
             p = np.poly1d(z)
-            axes[i].plot(df[feature], p(df[feature]), "r--", alpha=0.8, linewidth=2)
+            axes[i].plot(pair_df[feature], p(pair_df[feature]), "r--", alpha=0.8, linewidth=2)
         
         axes[i].grid(True, alpha=0.3)
     

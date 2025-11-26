@@ -1,0 +1,70 @@
+
+======================================================================
+RESUMEN COMPLETO - ANÁLISIS EXPLORATORIO Y PREPROCESAMIENTO
+======================================================================
+
+DATASET ORIGINAL:
+  • Total filas: 387
+  • Total columnas: 96
+  • Features numéricas: 87
+  • Features categóricas: 9
+
+TARGETS:
+  • Regresión: altura_max_m, duracion_min, distancia_km
+  • Clasificación: calidad_dia
+
+DESBALANCEO DE CLASES:
+  • Ratio: 24.80
+  • Estado: Fuertemente desbalanceado
+
+FEATURES ELIMINADAS:
+  • IDs y constantes: 20
+  • Por valores faltantes: 0
+  • Total eliminadas: 20
+
+SPLIT DE DATOS:
+  • Train: 270 (69.8%)
+  • Val: 58 (15.0%)
+  • Test: 59 (15.2%)
+  • Estratificación: calidad_dia
+
+PREPROCESAMIENTO APLICADO:
+
+  1. Valores Faltantes:
+     • Método: Mediana (numéricas), Moda (categóricas)
+     • Columnas droppeadas: 0
+     • Valores imputados: 4
+
+  2. Outliers:
+     • Método: Winsorización (percentiles 1-99)
+     • Features procesadas: 70
+     • Valores modificados: 329 (train)
+
+  3. Codificación:
+     • Variables categóricas: 5
+     • Método: One-Hot Encoding
+     • Nuevas columnas: 345
+
+  4. Normalización:
+     • Método: RobustScaler
+     • Features escaladas: 68
+
+DATASETS FINALES:
+  • Train: 270 × 421
+  • Val: 58 × 421
+  • Test: 59 × 421
+
+VISUALIZACIONES GENERADAS:
+  • 9 archivos en /visualizaciones/
+  • Distribuciones, correlaciones, outliers, comparaciones
+
+GARANTÍAS DE CALIDAD:
+  ✓ Sin data leakage (ajustes solo con train)
+  ✓ Estratificación mantenida
+  ✓ Proporciones verificadas
+  ✓ Escalado verificado
+
+PRÓXIMO PASO:
+  → Feature Engineering (opcional)
+  → Modelado y Evaluación
+======================================================================

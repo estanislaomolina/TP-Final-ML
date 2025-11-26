@@ -23,6 +23,7 @@ class PreprocessingPipeline:
         self.scalers = {}
         self.encoders = {}
         self.outlier_bounds = {}
+        self.scaler_fill_values = {}
     
     def handle_missing_values(self, train_df, val_df, threshold=0.5):
         """
@@ -215,11 +216,21 @@ class PreprocessingPipeline:
         else:
             raise ValueError(f"Método '{method}' no reconocido")
         
-        # Fit solo con train, transform ambos
-        train_df[features_to_scale] = scaler.fit_transform(train_df[features_to_scale])
-        val_df[features_to_scale] = scaler.transform(val_df[features_to_scale])
+        train_numeric = train_df[features_to_scale].apply(pd.to_numeric, errors='coerce')
+        val_numeric = val_df[features_to_scale].apply(pd.to_numeric, errors='coerce')
+
+        train_numeric = train_numeric.replace([np.inf, -np.inf], np.nan)
+        val_numeric = val_numeric.replace([np.inf, -np.inf], np.nan)
+
+        fill_values = train_numeric.median()
+        train_numeric = train_numeric.fillna(fill_values)
+        val_numeric = val_numeric.fillna(fill_values)
+
+        train_df[features_to_scale] = scaler.fit_transform(train_numeric)
+        val_df[features_to_scale] = scaler.transform(val_numeric)
         
         self.scalers[method] = scaler
+        self.scaler_fill_values[method] = fill_values
         
         return train_df, val_df, scaler
 
