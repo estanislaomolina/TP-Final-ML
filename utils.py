@@ -25,7 +25,6 @@ def check_data_consistency(df: pd.DataFrame) -> Dict:
         - valores faltantes
         - tipos de datos
         - valores únicos por columna
-        - inconsistencias detectadas
     """
     
     consistency_report = {}
@@ -48,16 +47,11 @@ def check_data_consistency(df: pd.DataFrame) -> Dict:
     # 3. Tipos de datos
     consistency_report['data_types'] = df.dtypes.value_counts()
     
-    # 4. Valores únicos (para detectar posibles IDs o categóricas con alta cardinalidad)
-    unique_counts = df.nunique()
-    high_cardinality = unique_counts[unique_counts > len(df) * 0.5]
-    consistency_report['high_cardinality_features'] = high_cardinality
-    
-    # 5. Constantes (columnas con un solo valor)
+    # 4. Constantes (columnas con un solo valor)
     constant_features = [col for col in df.columns if df[col].nunique() <= 1]
     consistency_report['constant_features'] = constant_features
     
-    # 6. Chequear valores infinitos en numéricas
+    # 5. Chequear valores infinitos en numéricas
     numeric_cols = df.select_dtypes(include=[np.number]).columns
     inf_counts = {col: np.isinf(df[col]).sum() for col in numeric_cols}
     inf_counts = {k: v for k, v in inf_counts.items() if v > 0}
@@ -66,7 +60,7 @@ def check_data_consistency(df: pd.DataFrame) -> Dict:
     return consistency_report
 
 
-def identify_useless_features(df: pd.DataFrame) -> Dict:
+def identify_features_2be_reviewed(df: pd.DataFrame) -> Dict:
     """
     Identifica features que probablemente no aporten valor predictivo
     
@@ -236,10 +230,6 @@ def check_class_balance(df: pd.DataFrame, target_col: str) -> Dict:
 def print_consistency_report(report: Dict):
     """Imprime reporte de consistencia de forma legible"""
     
-    print("=" * 70)
-    print("REPORTE DE CONSISTENCIA DE DATOS")
-    print("=" * 70)
-    
     # Duplicados
     print(f"\n1. DUPLICADOS:")
     print(f"   Total: {report['duplicates']['count']}")
@@ -251,31 +241,23 @@ def print_consistency_report(report: Dict):
     missing_with_values = missing_df[missing_df['count'] > 0]
     if len(missing_with_values) > 0:
         print(f"   Columnas con valores faltantes: {len(missing_with_values)}")
-        print(f"\n   Top 10:")
-        for idx, row in missing_with_values.head(10).iterrows():
+        print(f"\n   Top 5:")
+        for idx, row in missing_with_values.head(5).iterrows():
             print(f"   - {idx}: {row['count']} ({row['percentage']:.2f}%)")
     else:
-        print("   ✓ No hay valores faltantes")
+        print("No hay valores faltantes")
     
     # Tipos de datos
     print(f"\n3. TIPOS DE DATOS:")
     for dtype, count in report['data_types'].items():
         print(f"   - {dtype}: {count} columnas")
     
-    # Alta cardinalidad
-    print(f"\n4. FEATURES CON ALTA CARDINALIDAD (posibles IDs):")
-    if len(report['high_cardinality_features']) > 0:
-        for col, n_unique in report['high_cardinality_features'].items():
-            print(f"   - {col}: {n_unique} valores únicos")
-    else:
-        print("   ✓ No detectadas")
-    
     # Constantes
     print(f"\n5. FEATURES CONSTANTES:")
     if len(report['constant_features']) > 0:
         print(f"   {report['constant_features']}")
     else:
-        print("   ✓ No detectadas")
+        print("No detectadas")
     
     # Infinitos
     print(f"\n6. VALORES INFINITOS:")
@@ -283,14 +265,14 @@ def print_consistency_report(report: Dict):
         for col, count in report['infinite_values'].items():
             print(f"   - {col}: {count}")
     else:
-        print("   ✓ No detectados")
+        print("No detectados")
 
 
-def print_useless_features_report(useless: Dict):
-    """Imprime reporte de features inútiles"""
+def print_features_2be_reviewed(useless: Dict):
+    """Imprime reporte de features a revisar"""
     
     print("\n" + "=" * 70)
-    print("IDENTIFICACIÓN DE FEATURES SIN VALOR PREDICTIVO")
+    print("IDENTIFICACIÓN DE FEATURES A REVISAR")
     print("=" * 70)
     
     print(f"\n1. IDENTIFICADORES (IDs):")
@@ -298,28 +280,28 @@ def print_useless_features_report(useless: Dict):
         for col in useless['identifiers']:
             print(f"   - {col}")
     else:
-        print("   ✓ No detectados")
+        print("No detectados")
     
     print(f"\n2. ALTA CARDINALIDAD (categóricas con muchos valores):")
     if len(useless['high_cardinality']) > 0:
         for col in useless['high_cardinality']:
             print(f"   - {col}")
     else:
-        print("   ✓ No detectadas")
+        print("No detectadas")
     
     print(f"\n3. CONSTANTES:")
     if len(useless['constant']) > 0:
         for col in useless['constant']:
             print(f"   - {col}")
     else:
-        print("   ✓ No detectadas")
+        print("No detectadas")
     
     print(f"\n4. CASI CONSTANTES (>95% mismo valor):")
     if len(useless['almost_constant']) > 0:
         for col in useless['almost_constant']:
             print(f"   - {col}")
     else:
-        print("   ✓ No detectadas")
+        print("No detectadas")
     
     print(f"\n5. RECOMENDADAS PARA ELIMINAR:")
     if len(useless['recommended_to_drop']) > 0:
@@ -327,4 +309,4 @@ def print_useless_features_report(useless: Dict):
         for col in useless['recommended_to_drop']:
             print(f"   - {col}")
     else:
-        print("   ✓ Ninguna")
+        print("Ninguna")
