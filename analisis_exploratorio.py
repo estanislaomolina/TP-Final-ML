@@ -17,10 +17,6 @@ def get_basic_statistics(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         (numeric_stats, categorical_stats)
     """
     
-    # Numéricas
-    numeric_cols = df.select_dtypes(include=[np.number]).columns
-    numeric_stats = df[numeric_cols].describe()
-    
     # Categóricas
     categorical_cols = df.select_dtypes(include=['object']).columns
     if len(categorical_cols) > 0:
@@ -28,25 +24,23 @@ def get_basic_statistics(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
             'feature': categorical_cols,
             'n_unique': [df[col].nunique() for col in categorical_cols],
             'most_common': [df[col].mode()[0] if len(df[col].mode()) > 0 else None 
-                           for col in categorical_cols],
+                            for col in categorical_cols],
             'most_common_freq': [df[col].value_counts().iloc[0] if len(df[col]) > 0 else 0
                                 for col in categorical_cols]
         })
     else:
         categorical_stats = pd.DataFrame()
     
-    return numeric_stats, categorical_stats
+    return categorical_stats
 
 
-def analyze_target_distributions(df: pd.DataFrame, 
-                                 targets: List[str]) -> Dict:
+def analyze_target_distributions(df: pd.DataFrame, targets: List[str]) -> Dict:
     """
     Analiza la distribución de variables target
     
     Returns:
         Dict con estadísticas y tests de normalidad
     """
-    
     target_analysis = {}
     
     for target in targets:
@@ -54,7 +48,6 @@ def analyze_target_distributions(df: pd.DataFrame,
             continue
         
         data = df[target].dropna()
-        
         analysis = {
             'count': len(data),
             'missing': df[target].isnull().sum(),
@@ -64,29 +57,14 @@ def analyze_target_distributions(df: pd.DataFrame,
             'min': data.min(),
             'max': data.max(),
             'q1': data.quantile(0.25),
-            'q3': data.quantile(0.75),
-            'skewness': data.skew(),
-            'kurtosis': data.kurtosis()
+            'q3': data.quantile(0.75)
         }
-        
-        # Test de normalidad (muestrear si es muy grande)
-        sample = data.sample(min(5000, len(data)))
-        shapiro_stat, shapiro_p = stats.shapiro(sample)
-        
-        analysis['normality_test'] = {
-            'shapiro_stat': shapiro_stat,
-            'shapiro_p': shapiro_p,
-            'is_normal': shapiro_p > 0.05
-        }
-        
         target_analysis[target] = analysis
-    
+        
     return target_analysis
 
 
-def compute_correlation_matrix(df: pd.DataFrame, 
-                               features: List[str] = None,
-                               method: str = 'pearson') -> pd.DataFrame:
+def compute_correlation_matrix(df: pd.DataFrame, features: List[str] = None, method: str = 'pearson') -> pd.DataFrame:
     """
     Calcula matriz de correlación
     
@@ -114,8 +92,7 @@ def compute_correlation_matrix(df: pd.DataFrame,
     return corr_matrix
 
 
-def find_high_correlations(corr_matrix: pd.DataFrame, 
-                           threshold: float = 0.8) -> pd.DataFrame:
+def find_high_correlations(corr_matrix: pd.DataFrame, threshold: float = 0.8) -> pd.DataFrame:
     """
     Encuentra pares de features con alta correlación
     
@@ -154,9 +131,7 @@ def find_high_correlations(corr_matrix: pd.DataFrame,
         return pd.DataFrame()
 
 
-def analyze_feature_importance_by_correlation(df: pd.DataFrame,
-                                              targets: List[str],
-                                              top_n: int = 20) -> Dict:
+def analyze_feature_importance_by_correlation(df: pd.DataFrame, targets: List[str], top_n: int = 20) -> Dict:
     """
     Analiza importancia de features basándose en correlación con targets
     
@@ -189,8 +164,7 @@ def analyze_feature_importance_by_correlation(df: pd.DataFrame,
     return feature_importance
 
 
-def detect_outliers_multiple_methods(df: pd.DataFrame, 
-                                     feature: str) -> Dict:
+def detect_outliers_multiple_methods(df: pd.DataFrame, feature: str) -> Dict:
     """
     Detecta outliers usando múltiples métodos
     
@@ -242,9 +216,7 @@ def detect_outliers_multiple_methods(df: pd.DataFrame,
     return outliers_info
 
 
-def analyze_categorical_distribution(df: pd.DataFrame, 
-                                     feature: str,
-                                     top_n: int = 10) -> Dict:
+def analyze_categorical_distribution(df: pd.DataFrame, feature: str, top_n: int = 10) -> Dict:
     """
     Analiza distribución de una feature categórica
     
@@ -269,9 +241,7 @@ def analyze_categorical_distribution(df: pd.DataFrame,
     return analysis
 
 
-def compare_distributions_by_class(df: pd.DataFrame,
-                                   feature: str,
-                                   class_col: str) -> Dict:
+def compare_distributions_by_class(df: pd.DataFrame, feature: str, class_col: str) -> Dict:
     """
     Compara distribución de una feature entre diferentes clases
     
@@ -298,8 +268,7 @@ def compare_distributions_by_class(df: pd.DataFrame,
             }
     
     # Test estadístico (ANOVA si >2 clases, t-test si 2 clases)
-    classes = [df[df[class_col] == c][feature].dropna() 
-               for c in df[class_col].unique() if pd.notna(c)]
+    classes = [df[df[class_col] == c][feature].dropna() for c in df[class_col].unique() if pd.notna(c)]
     
     if len(classes) > 2:
         f_stat, p_value = stats.f_oneway(*classes)
@@ -364,7 +333,3 @@ def print_target_analysis(target_analysis: Dict):
         print(f"  Mediana: {analysis['median']:.2f}")
         print(f"  Std: {analysis['std']:.2f}")
         print(f"  Rango: [{analysis['min']:.2f}, {analysis['max']:.2f}]")
-        print(f"  Asimetría: {analysis['skewness']:.3f}")
-        print(f"  Curtosis: {analysis['kurtosis']:.3f}")
-        print(f"  Normalidad (Shapiro-Wilk p-value): {analysis['normality_test']['shapiro_p']:.4f}")
-        print(f"    → {'Normal' if analysis['normality_test']['is_normal'] else 'NO Normal'}")

@@ -214,16 +214,6 @@ def check_class_balance(df: pd.DataFrame, target_col: str) -> Dict:
     max_class = value_counts.max()
     balance_info['imbalance_ratio'] = max_class / min_class
     
-    # Clasificación del desbalance
-    if balance_info['imbalance_ratio'] < 1.5:
-        balance_info['balance_status'] = 'Balanceado'
-    elif balance_info['imbalance_ratio'] < 3:
-        balance_info['balance_status'] = 'Levemente desbalanceado'
-    elif balance_info['imbalance_ratio'] < 5:
-        balance_info['balance_status'] = 'Moderadamente desbalanceado'
-    else:
-        balance_info['balance_status'] = 'Fuertemente desbalanceado'
-    
     return balance_info
 
 
@@ -270,10 +260,6 @@ def print_consistency_report(report: Dict):
 
 def print_features_2be_reviewed(useless: Dict):
     """Imprime reporte de features a revisar"""
-    
-    print("\n" + "=" * 70)
-    print("IDENTIFICACIÓN DE FEATURES A REVISAR")
-    print("=" * 70)
     
     print(f"\n1. IDENTIFICADORES (IDs):")
     if len(useless['identifiers']) > 0:
