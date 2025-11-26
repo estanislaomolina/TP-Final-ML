@@ -63,20 +63,6 @@ def check_data_consistency(df: pd.DataFrame) -> Dict:
     inf_counts = {k: v for k, v in inf_counts.items() if v > 0}
     consistency_report['infinite_values'] = inf_counts
     
-    # 7. Chequear rangos sospechosos en targets
-    targets = ['altura_max_m', 'duracion_min', 'distancia_km']
-    suspicious_ranges = {}
-    for target in targets:
-        if target in df.columns:
-            suspicious = {}
-            if (df[target] < 0).any():
-                suspicious['negative_values'] = (df[target] < 0).sum()
-            if (df[target] == 0).any():
-                suspicious['zero_values'] = (df[target] == 0).sum()
-            if len(suspicious) > 0:
-                suspicious_ranges[target] = suspicious
-    consistency_report['suspicious_ranges'] = suspicious_ranges
-    
     return consistency_report
 
 
@@ -296,16 +282,6 @@ def print_consistency_report(report: Dict):
     if len(report['infinite_values']) > 0:
         for col, count in report['infinite_values'].items():
             print(f"   - {col}: {count}")
-    else:
-        print("   ✓ No detectados")
-    
-    # Rangos sospechosos
-    print(f"\n7. RANGOS SOSPECHOSOS EN TARGETS:")
-    if len(report['suspicious_ranges']) > 0:
-        for col, issues in report['suspicious_ranges'].items():
-            print(f"   - {col}:")
-            for issue_type, count in issues.items():
-                print(f"     {issue_type}: {count}")
     else:
         print("   ✓ No detectados")
 
