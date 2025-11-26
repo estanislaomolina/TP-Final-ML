@@ -1,0 +1,6 @@
+- Reemplazar outliers por la media
+- revisar cantidad de columnas
+- revisar pre procesamiento
+- mandarle mail para confirmar reunion con juan
+- mandarle mail a palazzo para que quede por escrito el cambio en la consigna
+- 
