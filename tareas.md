@@ -4,3 +4,4 @@
 - mandarle mail para confirmar reunion con juan
 - mandarle mail a palazzo para que quede por escrito el cambio en la consigna
 - lat y lon pasarlo a segun el tipo de aeropuerto
+- preguntarle a juan si tenemos que hacer un modelo para cada target o un modelo para todos los targets
