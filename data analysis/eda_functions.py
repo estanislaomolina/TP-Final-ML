@@ -53,7 +53,7 @@ def resumen_dataset(df):
             'n_missing': missing[missing > 0],
             'pct_missing': missing_pct[missing > 0]
         }).sort_values('pct_missing', ascending=False)
-        print(missing_df.head(20))
+        print(missing_df)
     else:
         print("✓ No hay valores faltantes")
 

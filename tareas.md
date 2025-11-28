@@ -5,3 +5,6 @@
 - mandarle mail a palazzo para que quede por escrito el cambio en la consigna
 - lat y lon pasarlo a segun el tipo de aeropuerto
 - preguntarle a juan si tenemos que hacer un modelo para cada target o un modelo para todos los targets
+- si hacemos feature engineering, ver de no overfittear
+- revisar que no estemos haciendo leaking
+- ver como tratar el desbalanceo de clases de clasificacion multiclase (bueno malo excelente regular)
