@@ -67,6 +67,11 @@ def identificar_columnas(df):
         
         'features_meteo_percentil': [col for col in df.columns if any(f'_p{p}' in col for p in [0,25,50,75,100]) and col.startswith('meteo_')],
         
+        'features_meteo_previas': [
+            col for col in df.columns
+            if any(col.split('.')[0].endswith(f'_pre{h}h') for h in range(1, 6))
+        ],
+        
         'features_temporales': ['mes', 'dia_año', 'dia_semana']
     }
     
@@ -78,6 +83,7 @@ def identificar_columnas(df):
               columnas['features_meteo_despegue'] +
               columnas['features_meteo_hora'] +
               columnas['features_meteo_percentil'] +
+              columnas['features_meteo_previas'] +
               columnas['features_temporales'])
     
     columnas['features_vuelo'] = [col for col in df.columns if col not in usadas]
