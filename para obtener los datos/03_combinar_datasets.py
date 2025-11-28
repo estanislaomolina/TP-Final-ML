@@ -62,11 +62,11 @@ def combinar_datasets_completo():
     def clasificar_dia(altura_max):
         if pd.isna(altura_max):
             return None
-        elif altura_max > 2500:
+        elif altura_max > 2300:
             return 'Excelente'
-        elif altura_max > 1500:
+        elif altura_max > 2000:
             return 'Bueno'
-        elif altura_max > 1000:
+        elif altura_max > 1700:
             return 'Regular'
         else:
             return 'Malo'
