@@ -1,0 +1,1 @@
+import xarray as xr; ds = xr.open_dataset('data/raw/era5_data_01.nc', engine='netcdf4'); print(list(ds.variables)); print(ds)
