@@ -141,57 +141,21 @@ def plot_distribucion_targets(df, targets_reg, target_clf=None):
     plt.show()
 
 
-def analizar_correlaciones(df, targets, top_n=20, flight_features=None):
+def plot_correlation_matrix(df, features):
     """
-    Analiza correlaciones entre features y targets.
+    Visualiza matriz de correlación.
     
     Args:
         df: DataFrame
-        targets: Lista de targets
-        top_n: Top N correlaciones a mostrar
+        features: Lista de características a incluir
     """
     
-    print("="*80)
-    print("CORRELACIONES CON TARGETS")
-    print("="*80)
+    corr = df[features].corr()
     
-    df_num = df.select_dtypes(include=[np.number])
-    for target in targets:
-        if target in df_num.columns and target not in flight_features:
-            corr_target = df_num.corr()[target].drop(target).abs().sort_values(ascending=False)
-            print(f"\n▶ Correlaciones con {target} (Top {top_n}):")
-            print(corr_target.head(top_n).to_string())
-
-
-def plot_correlacion_heatmap(df, targets, top_n=15):
-    """
-    Visualiza heatmap de correlaciones.
-    
-    Args:
-        df: DataFrame
-        targets: Lista de targets
-        top_n: Top N features a incluir
-    """
-    
-    df_num = df.select_dtypes(include=[np.number])
-    
-    for target in targets:
-        if target in df_num.columns and target not in flight_features:
-            # Seleccionar top features correlacionadas
-            corr_target = df_num.corr()[target].drop(target).abs().sort_values(ascending=False)
-            top_features = corr_target.head(top_n).index.tolist()
-            
-            # Matriz de correlación
-            cols_plot = top_features + [target]
-            corr_matrix = df_num[cols_plot].corr()
-            
-            # Plot
-            plt.figure(figsize=(12, 10))
-            sns.heatmap(corr_matrix, annot=True, fmt='.2f', cmap='coolwarm', 
-                       center=0, vmin=-1, vmax=1, square=True)
-            plt.title(f'Correlaciones con {target} (Top {top_n} features)')
-            plt.tight_layout()
-            plt.show()
+    plt.figure(figsize=(12, 10))
+    sns.heatmap(corr, annot=True, fmt=".2f", cmap='coolwarm', square=True, cbar_kws={"shrink": .8})
+    plt.title('Matriz de Correlación')
+    plt.show()
 
 
 def analizar_evolucion_temporal(df, targets):

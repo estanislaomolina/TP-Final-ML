@@ -520,3 +520,45 @@ def guardar_preprocesadores(imputers, scaler, output_dir='data/processed'):
         joblib.dump(scaler, f"{output_dir}/scaler.pkl")
     
     print(f"✓ Preprocesadores guardados en {output_dir}/")
+
+
+def add_avg(df, column_prefix:list):
+    """
+    Agrega columnas de promedio para las columnas que comienzan con los prefijos dados.
+    
+    Args:
+        df: DataFrame
+        column_prefix: Lista de prefijos de columnas para calcular el promedio
+        
+    Returns:
+        DataFrame con nuevas columnas de promedio agregadas
+    """
+    added_cols = []
+    df_copy = df.copy()
+    for prefix in column_prefix:
+        cols = [col for col in df_copy.columns if col.startswith(prefix)]
+        if cols:
+            df_copy[f'{prefix}_avg'] = df_copy[cols].mean(axis=1)
+            added_cols.append(f'{prefix}_avg')
+    return df_copy, added_cols
+
+
+def analizar_correlaciones(df, targets, top_n=5, corr_features=None):
+    """
+    Analiza y muestra las correlaciones de los targets con las features dadas.
+    En caso de no especificar features, usa todas las columnas numéricas.
+    
+    Args:
+        df: DataFrame
+        targets: Lista de targets
+        top_n: Número de top correlaciones a mostrar
+        corr_features: Lista de features para calcular correlaciones
+    """
+    if corr_features is None:
+        corr_features = df.select_dtypes(include=[np.number]).columns.tolist()
+    
+    for target in targets:
+        if target in df.columns and target not in corr_features:
+            corr_target = df[corr_features + [target]].corr()[target].drop(target).abs().sort_values(ascending=False)
+            print(f"\n▶ Correlaciones con {target} (Top {top_n}):")
+            print(corr_target.head(top_n).to_string())
