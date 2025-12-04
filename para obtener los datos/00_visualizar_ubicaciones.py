@@ -171,10 +171,6 @@ def visualizar_ubicaciones():
     print("• Puntos de colores: Ubicaciones de despegue")
     print("• Estrellas: Centros de cada club")
     print("• Rectángulo rojo punteado: Área que cubrirá ERA5")
-    print("\nVerifica que:")
-    print("  1. Todos tus clubes están dentro del rectángulo rojo")
-    print("  2. El área no es excesivamente grande")
-    print("  3. Los clusters corresponden a tus 4 clubes")
     print("="*70)
 
 if __name__ == "__main__":

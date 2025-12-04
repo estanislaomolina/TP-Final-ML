@@ -141,7 +141,7 @@ def plot_distribucion_targets(df, targets_reg, target_clf=None):
     plt.show()
 
 
-def analizar_correlaciones(df, targets, top_n=20):
+def analizar_correlaciones(df, targets, top_n=20, flight_features=None):
     """
     Analiza correlaciones entre features y targets.
     
@@ -155,15 +155,12 @@ def analizar_correlaciones(df, targets, top_n=20):
     print("CORRELACIONES CON TARGETS")
     print("="*80)
     
-    # Seleccionar solo columnas numéricas
     df_num = df.select_dtypes(include=[np.number])
-    
     for target in targets:
-        if target in df_num.columns:
-            print(f"\n▶ TOP {top_n} CORRELACIONES CON {target}:")
-            
-            corr = df_num.corr()[target].drop(target).abs().sort_values(ascending=False)
-            print(corr.head(top_n))
+        if target in df_num.columns and target not in flight_features:
+            corr_target = df_num.corr()[target].drop(target).abs().sort_values(ascending=False)
+            print(f"\n▶ Correlaciones con {target} (Top {top_n}):")
+            print(corr_target.head(top_n).to_string())
 
 
 def plot_correlacion_heatmap(df, targets, top_n=15):
@@ -179,7 +176,7 @@ def plot_correlacion_heatmap(df, targets, top_n=15):
     df_num = df.select_dtypes(include=[np.number])
     
     for target in targets:
-        if target in df_num.columns:
+        if target in df_num.columns and target not in flight_features:
             # Seleccionar top features correlacionadas
             corr_target = df_num.corr()[target].drop(target).abs().sort_values(ascending=False)
             top_features = corr_target.head(top_n).index.tolist()
