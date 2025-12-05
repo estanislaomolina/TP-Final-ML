@@ -13,3 +13,9 @@
 - random forest: explorar Xgboost (entenderlo teoricamente) (random forest con regularizacion) -> no overfittear (https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html)
 -   el hiperparametro puede ser la variante del random forest
 - settear 2 tiempos (tiempo 1 y tirmpo 2 y nos importa que sea el mismo train set y el mismo val),, y variar el lr y usarlo en cada uno
+
+Modelos bases:
+- predecir segun mean y media
+- regresion linear simple
+- random forest
+- xgboost
