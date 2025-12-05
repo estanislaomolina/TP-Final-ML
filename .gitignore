@@ -1,2 +1,9 @@
 .venv
 __pycache__
+test.aux
+test.fdb_latexmk
+test.fls
+test.log
+test.pdf
+test.synctex.gz
+test.tex
