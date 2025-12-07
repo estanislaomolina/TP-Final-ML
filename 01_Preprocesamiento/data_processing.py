@@ -119,7 +119,7 @@ def split_data(df, test_size=0.2, random_state=42):
     print(f"Datos divididos: Dev={dev.shape}, Test={test.shape}")
     return dev, test
 
-def clip_outliers(df, columns, lower_percentile=0.01, upper_percentile=0.99):
+def clip_outliers(df, target, lower_percentile=0.01, upper_percentile=0.99):
     """
     Recorta los valores atípicos en una columna específica del DataFrame.
     
@@ -129,9 +129,9 @@ def clip_outliers(df, columns, lower_percentile=0.01, upper_percentile=0.99):
         lower_percentile: Percentil inferior para el recorte
         upper_percentile: Percentil superior para el recorte
     """
-    for column in columns:
-        lower_bound = df[column].quantile(lower_percentile)
-        upper_bound = df[column].quantile(upper_percentile)
-        df[column] = df[column].clip(lower=lower_bound, upper=upper_bound)
-        print(f"Valores atípicos recortados en '{column}' entre percentiles {lower_percentile} y {upper_percentile}.")
+    if target in df.columns:
+        lower_bound = df[target].quantile(lower_percentile)
+        upper_bound = df[target].quantile(upper_percentile)
+        df[target] = df[target].clip(lower=lower_bound, upper=upper_bound)
+        print(f"Valores atípicos recortados en '{target}' entre percentiles {lower_percentile} y {upper_percentile}.")
     return df
