@@ -6,42 +6,9 @@ Predicción de vuelo en planeador
 import numpy as np
 import pandas as pd
 import re
+from sklearn.preprocessing import RobustScaler
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
-
-
-def calcular_features_promedio(df):
-    """
-    Calcula promedios de features meteorológicas horarias.
-    Reduce ~100 features horarias a ~11 promedios.
-    
-    Parameters:
-    -----------
-    df : DataFrame
-        Dataset con features horarias (09h-18h)
-    
-    Returns:
-    --------
-    DataFrame con features promedio agregadas
-    """
-    df_out = df.copy()
-    
-    # Variables meteorológicas con datos horarios
-    variables_meteo = [
-        'solar_rad', 'precipitation', 'temp_2m', 'cloud_cover',
-        'wind_u', 'wind_v', 'pressure', 'boundary_layer_height',
-        'cape', 'skin_temp', 'wind_speed'
-    ]
-    
-    for var in variables_meteo:
-        # Buscar todas las columnas horarias de esta variable
-        pattern = f'{var}_\\d{{2}}h'
-        cols_horarias = [col for col in df.columns if re.match(pattern, col)]
-        
-        if cols_horarias:
-            # Calcular promedio
-            df_out[f'{var}_avg'] = df[cols_horarias].mean(axis=1)
-    
-    return df_out
+from sklearn.cluster import KMeans
 
 
 def preparar_datos(dev, test, targets_reg, modo='simple'):
@@ -69,66 +36,130 @@ def preparar_datos(dev, test, targets_reg, modo='simple'):
     
     # Si modo simple, calcular promedios primero
     if modo == 'simple':
-        dev_proc = calcular_features_promedio(dev_proc)
-        test_proc = calcular_features_promedio(test_proc)
+        cols = [col for col in dev_proc.columns if col.endswith('_avg')]
+        dev_proc = dev_proc[targets_reg + ["hora_despegue_ajustada", "club_2", "club_1", "club_0"] + cols]
+        test_proc = test_proc[targets_reg + ["hora_despegue_ajustada", "club_2", "club_1", "club_0"] + cols]
     
-    # Columnas a eliminar (no son features predictivas)
-    cols_no_features = [
-        'fecha', 'pilot', 'glider', 'competition_id', 
-        'filename', 'flight_id', 'calidad_dia',
-        'hora_despegue'  # string - usamos hora_despegue_decimal
-    ]
-    
-    # Filtrar solo las que existen
-    cols_no_features = [col for col in cols_no_features if col in dev_proc.columns]
-    
-    # Features que son derivadas del vuelo (no disponibles en predicción)
-    # IMPORTANTE: Conservar lat_despegue, lon_despegue, hora_despegue_decimal
-    flight_features = [
-        'altura_min_m', 'altura_despegue_m', 'altura_aterrizaje_m',
-        'rango_altura_m', 'duracion_horas', 'num_gps_fixes',
-        'frecuencia_muestreo_seg', 'intensidad_termicas_max_ms',
-        'intensidad_termicas_min_ms', 'intensidad_termicas_std_ms',
-        'altura_base_termicas_mean_m', 'altura_tope_termicas_mean_m',
-        'altura_base_termicas_min_m', 'altura_tope_termicas_max_m',
-        'ganancia_por_termica_mean_m', 'ganancia_por_termica_max_m',
-        'duracion_termica_mean_seg', 'duracion_termica_max_seg',
-        'hora_primera_termica', 'hora_ultima_termica',
-        'dispersion_termicas_lat', 'dispersion_termicas_lon',
-        'tiempo_en_planeo_min', 'porcentaje_tiempo_termicas',
-        'tasa_descenso_mean_ms', 'bearing_change_mean_deg',
-        'bearing_change_max_deg', 'bearing_change_std_deg',
-        'ground_speed_mean_kmh', 'ground_speed_max_kmh',
-        'ground_speed_min_kmh', 'ground_speed_std_kmh',
-        'hora_inicio_decimal', 'hora_fin_decimal',
-        'altura_mean_manana_m', 'altura_mean_mediodia_m',
-        'altura_mean_tarde1_m', 'altura_mean_tarde2_m',
-        'lat_min', 'lat_max', 'lon_min', 'lon_max',
-        'lat_centro', 'lon_centro', 'rango_lat_deg', 'rango_lon_deg',
-        'distancia_max_despegue_km', 'area_vuelo_km2',
-        'altura_std_m', 'altura_cv', 'cambio_altura_mean_m',
-        'cambio_altura_std_m'
-    ]
-    
-    flight_features = [col for col in flight_features if col in dev_proc.columns]
-    
-    # Si modo simple, eliminar también todas las features horarias
-    if modo == 'simple':
-        import re
-        horarias_pattern = re.compile(r'_\d{2}h$')
-        cols_horarias = [col for col in dev_proc.columns if horarias_pattern.search(col)]
-        flight_features.extend(cols_horarias)
-    
-    # Todas las columnas a eliminar
-    cols_to_drop = list(set(cols_no_features + flight_features + targets_reg))
-    
-    # Separar X e y
-    X_dev = dev_proc.drop(columns=cols_to_drop)
+    # Separar features y targets
     y_dev = dev_proc[targets_reg]
-    X_test = test_proc.drop(columns=cols_to_drop)
+    X_dev = dev_proc.drop(columns=targets_reg)
+    X_dev.drop(columns=["fecha"], inplace=True, errors='ignore')
     y_test = test_proc[targets_reg]
+    X_test = test_proc.drop(columns=targets_reg)
+    X_test.drop(columns=["fecha"], inplace=True, errors='ignore')
     
     return X_dev, y_dev, X_test, y_test
+
+
+def coordenadas_a_one_hot(dev, test):
+    """
+        Genera variables one-hot para latitud y longitud de despegue utilizando KMeans.
+        Ya sabemos que hay 4 zonas principales de despegue. En base a eso, se crean 
+        las columnas one-hot a los DataFrames dev y test, y elimina las columnas originales.
+        
+        Parameters
+        ----------
+        dev : pd.DataFrame
+            DataFrame de desarrollo
+        test : pd.DataFrame
+            DataFrame de test
+        
+        Returns
+        -------
+        dev_one_hot : pd.DataFrame
+            Dev con columnas one-hot agregadas
+        test_one_hot : pd.DataFrame
+            Test con columnas one-hot agregadas
+    """
+    #copia para no modificar originales
+    dev = dev.copy()
+    test = test.copy()
+    
+    if 'lat_despegue' in dev.columns and 'lon_despegue' in dev.columns:
+        kmeans = KMeans(n_clusters=4, random_state=42)
+        coords_dev = dev[['lat_despegue', 'lon_despegue']]
+        kmeans.fit(coords_dev)
+
+        dev_clusters = kmeans.predict(coords_dev)
+        test_clusters = kmeans.predict(test[['lat_despegue', 'lon_despegue']])
+
+        # Crear columnas one-hot SOLO para los primeros 3 clusters
+        # Las agrega al principio del DataFrame
+        for i in range(3):
+            dev.insert(0, f'club_{i}', (dev_clusters == i).astype(int))
+            test.insert(0, f'club_{i}', (test_clusters == i).astype(int))
+
+        # Eliminar columnas originales
+        dev = dev.drop(columns=['lat_despegue', 'lon_despegue'])
+        test = test.drop(columns=['lat_despegue', 'lon_despegue'])
+
+    return dev, test
+
+
+def normalizar_columnas(dev, test, columns):
+    """
+    Normaliza con RobustScaler solo las columnas indicadas en `columns`,
+    usando parámetros ajustados sobre `dev`, y aplica la misma
+    transformación a `test`.
+
+    Parameters
+    ----------
+    dev : pd.DataFrame
+        DataFrame de desarrollo (fit del scaler).
+    test : pd.DataFrame
+        DataFrame de test (solo transform).
+    columns : list[str]
+        Lista de nombres de columnas a normalizar (numéricas).
+
+    Returns
+    -------
+    dev_norm : pd.DataFrame
+        Dev con las columnas en `columns` escaladas.
+    test_norm : pd.DataFrame
+        Test con las columnas en `columns` escaladas.
+    scaler : RobustScaler
+        Scaler ajustado, por si lo querés usar luego en nuevos datos.
+    """
+    scaler = RobustScaler()
+    dev_norm = dev.copy()
+    test_norm = test.copy()
+    dev_norm[columns] = scaler.fit_transform(dev[columns])
+    test_norm[columns] = scaler.transform(test[columns])
+
+    return dev_norm, test_norm, scaler
+
+
+def ajustar_hora_despegue(dev, test):
+    """
+    Ajusta la columna 'hora_despegue' para que esté en el rango [0, 1].
+    Ademas le cambia el nombre a 'hora_despegue_ajustada' para evitar confusiones.
+    Agrega la columna ajustada al principio del DataFrame y elimina la original.
+    Parameters:
+    -----------
+    dev : DataFrame
+        Datos de desarrollo
+    test : DataFrame
+        Datos de test
+    
+    Returns:
+    --------
+    dev_ajustado, test_ajustado : DataFrames con 'hora_despegue' ajustada
+    """
+    dev_ajustado = dev.copy()
+    test_ajustado = test.copy()
+    
+    if 'hora_despegue' in dev.columns:
+        dt_dev = pd.to_datetime(dev_ajustado['hora_despegue'])
+        hora_decimal_dev = dt_dev.dt.hour + dt_dev.dt.minute / 60.0 + dt_dev.dt.second / 3600.0
+        dev_ajustado.insert(0, 'hora_despegue_ajustada', hora_decimal_dev / 24.0)
+        dev_ajustado = dev_ajustado.drop(columns=['hora_despegue'])
+    if 'hora_despegue' in test.columns:
+        dt_test = pd.to_datetime(test_ajustado['hora_despegue'])
+        hora_decimal_test = dt_test.dt.hour + dt_test.dt.minute / 60.0 + dt_test.dt.second / 3600.0
+        test_ajustado.insert(0, 'hora_despegue_ajustada', hora_decimal_test / 24.0)
+        test_ajustado = test_ajustado.drop(columns=['hora_despegue'])
+    
+    return dev_ajustado, test_ajustado
 
 
 def evaluar_modelo(y_true, y_pred, nombre_target):

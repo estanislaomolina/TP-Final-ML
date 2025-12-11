@@ -56,7 +56,7 @@ def split_estratificado_regresion(df, targets_reg, test_size=0.2, random_state=4
         )
     except ValueError:
         # Si hay estratos con muy pocas muestras, reducir número de bins
-        print("⚠️ Demasiados estratos, reduciendo a 3 bins por target...")
+        print("Demasiados estratos, reduciendo a 3 bins por target...")
         
         df['_strat_key'] = pd.qcut(df[targets_reg[0]], q=3, labels=False, duplicates='drop').astype(str)
         for target in targets_reg[1:]:
