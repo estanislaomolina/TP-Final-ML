@@ -1,4 +1,27 @@
-.venv
+venv/
+.venv/
+
+*.py[cod]
+*.pyo
+*.pyd
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- LaTeX ---
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.pdf
+*.synctex.gz
+*.toc
+*.out
+
+# --- Editor / OS ---
+.vscode/
+.idea/
+.DS_Store
 __pycache__
 test.aux
 test.fdb_latexmk
