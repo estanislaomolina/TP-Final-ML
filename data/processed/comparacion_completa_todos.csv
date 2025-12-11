@@ -1,78 +1,78 @@
 target,modelo,Test_R2
-altura_max_m,LinearRegression,0.3728387162202847
-altura_max_m,Ridge,0.3541441627209213
-altura_max_m,Lasso,0.3447609661036385
-altura_max_m,ElasticNet,0.3483113746394345
-altura_max_m,LinearRegression,0.5305414102790424
-altura_max_m,Ridge,0.5007468921666061
-altura_max_m,Lasso,0.3944493528788348
-altura_max_m,ElasticNet,0.465012688234457
-altura_max_m,RF Simple,0.6294223871656228
-altura_max_m,RF Full,0.6274926551479928
-altura_max_m,XGBoost Simple,0.6671311823018233
-altura_max_m,XGBoost Full,0.7382534820639193
-ganancia_altura_m,LinearRegression,0.2834102158188273
-ganancia_altura_m,Ridge,0.2666747398469679
-ganancia_altura_m,Lasso,0.2646574082781467
-ganancia_altura_m,ElasticNet,0.2750231943756315
-ganancia_altura_m,LinearRegression,0.4623272381164441
-ganancia_altura_m,Ridge,0.4351743247044222
-ganancia_altura_m,Lasso,0.3448853428851568
-ganancia_altura_m,ElasticNet,0.3973108746356565
-ganancia_altura_m,RF Simple,0.5940333449485644
-ganancia_altura_m,RF Full,0.5988509828424434
-ganancia_altura_m,XGBoost Simple,0.652646088960053
-ganancia_altura_m,XGBoost Full,0.6901023969719526
-duracion_min,LinearRegression,0.2824820998390803
-duracion_min,Ridge,0.2136679701193696
-duracion_min,Lasso,0.2457135113257506
-duracion_min,ElasticNet,0.1945862556642038
-duracion_min,LinearRegression,0.0959461528487073
-duracion_min,Ridge,0.3626714073238959
-duracion_min,Lasso,0.2633290802897026
-duracion_min,ElasticNet,0.383384151837612
-duracion_min,RF Simple,0.604561796094812
-duracion_min,RF Full,0.5647679516688264
-duracion_min,XGBoost Simple,0.6467316914441985
-duracion_min,XGBoost Full,0.6362945150908097
-distancia_km,LinearRegression,0.3880694721018113
-distancia_km,Ridge,0.3656941827525742
-distancia_km,Lasso,0.3760191533221247
-distancia_km,ElasticNet,0.3556614117990984
-distancia_km,LinearRegression,0.3689598864881432
-distancia_km,Ridge,0.5100996252398311
-distancia_km,Lasso,0.5018223030927131
-distancia_km,ElasticNet,0.5307356422521743
-distancia_km,RF Simple,0.6677873593288615
-distancia_km,RF Full,0.6485021405396545
-distancia_km,XGBoost Simple,0.7207513850345948
-distancia_km,XGBoost Full,0.70784762693586
-velocidad_promedio_kmh,LinearRegression,0.4545113360938294
-velocidad_promedio_kmh,Ridge,0.4508786702710926
-velocidad_promedio_kmh,Lasso,0.4418587555199128
-velocidad_promedio_kmh,ElasticNet,0.4475116642769873
-velocidad_promedio_kmh,LinearRegression,0.2501958517065628
-velocidad_promedio_kmh,Ridge,0.4073477280918821
-velocidad_promedio_kmh,Lasso,0.3888335189108951
-velocidad_promedio_kmh,ElasticNet,0.4536784022305029
-velocidad_promedio_kmh,RF Simple,0.5067814062817089
-velocidad_promedio_kmh,RF Full,0.4441232030030476
-velocidad_promedio_kmh,XGBoost Simple,0.5551799470648653
-velocidad_promedio_kmh,XGBoost Full,0.5277330314799858
-num_termicas,LinearRegression,0.1046400967546551
-num_termicas,Ridge,0.1332819670369585
-num_termicas,Lasso,0.1249554073106662
-num_termicas,ElasticNet,0.1261291446106226
+altura_max_m,LinearRegression,0.4509468323722282
+altura_max_m,Ridge,0.4533851297990291
+altura_max_m,Lasso,0.4508006167619387
+altura_max_m,ElasticNet,0.4508451411261219
+altura_max_m,LinearRegression,0.5851754634808122
+altura_max_m,Ridge,0.606951551906667
+altura_max_m,Lasso,0.6047823447171397
+altura_max_m,ElasticNet,0.5846465351043615
+altura_max_m,RF Simple,0.6240956847534319
+altura_max_m,RF Full,0.6180812379082861
+altura_max_m,XGBoost Simple,0.7226577434167911
+altura_max_m,XGBoost Full,0.7164491888470202
+ganancia_altura_m,LinearRegression,0.3753093880248719
+ganancia_altura_m,Ridge,0.3777097705146315
+ganancia_altura_m,Lasso,0.3743213170421985
+ganancia_altura_m,ElasticNet,0.3747422331336438
+ganancia_altura_m,LinearRegression,0.5274002259353444
+ganancia_altura_m,Ridge,0.5505764528080233
+ganancia_altura_m,Lasso,0.5491271180632513
+ganancia_altura_m,ElasticNet,0.5254685781581474
+ganancia_altura_m,RF Simple,0.5784867660166781
+ganancia_altura_m,RF Full,0.5927167813768675
+ganancia_altura_m,XGBoost Simple,0.624570391683847
+ganancia_altura_m,XGBoost Full,0.6951414263762039
+duracion_min,LinearRegression,0.6709918058479714
+duracion_min,Ridge,0.671197541627534
+duracion_min,Lasso,0.6714999992510489
+duracion_min,ElasticNet,0.6241478037640522
+duracion_min,LinearRegression,0.0
+duracion_min,Ridge,0.3981910375319378
+duracion_min,Lasso,0.6984523831425831
+duracion_min,ElasticNet,0.4798909303480257
+duracion_min,RF Simple,0.6638783316734234
+duracion_min,RF Full,0.6210904176602248
+duracion_min,XGBoost Simple,0.771905407051469
+duracion_min,XGBoost Full,0.637724729131059
+distancia_km,LinearRegression,0.6469624657952382
+distancia_km,Ridge,0.6316501361447017
+distancia_km,Lasso,0.6478889256366609
+distancia_km,ElasticNet,0.6170979330480211
+distancia_km,LinearRegression,0.2494494188107131
+distancia_km,Ridge,0.5366187678879768
+distancia_km,Lasso,0.6566604043798765
+distancia_km,ElasticNet,0.5952300267932691
+distancia_km,RF Simple,0.6986671206358023
+distancia_km,RF Full,0.6637224716003509
+distancia_km,XGBoost Simple,0.8172061916699536
+distancia_km,XGBoost Full,0.7704504117730706
+velocidad_promedio_kmh,LinearRegression,0.4689532143707299
+velocidad_promedio_kmh,Ridge,0.450684255217316
+velocidad_promedio_kmh,Lasso,0.4616587722969621
+velocidad_promedio_kmh,ElasticNet,0.4362577909029148
+velocidad_promedio_kmh,LinearRegression,0.2411711665332004
+velocidad_promedio_kmh,Ridge,0.4336640527724277
+velocidad_promedio_kmh,Lasso,0.422121790358801
+velocidad_promedio_kmh,ElasticNet,0.4824472709774785
+velocidad_promedio_kmh,RF Simple,0.4622269898570552
+velocidad_promedio_kmh,RF Full,0.4167723001276797
+velocidad_promedio_kmh,XGBoost Simple,0.5051183683788563
+velocidad_promedio_kmh,XGBoost Full,0.4104447856264948
+num_termicas,LinearRegression,0.1559217909674534
+num_termicas,Ridge,0.1576733029907154
+num_termicas,Lasso,0.1697377829922798
+num_termicas,ElasticNet,0.1605375617318116
 num_termicas,LinearRegression,0.0
-num_termicas,Ridge,0.1524487492627605
-num_termicas,Lasso,0.145301658690903
-num_termicas,ElasticNet,0.1558039649188903
-num_termicas,RF Simple,0.2525467472726007
-num_termicas,RF Full,0.2370968349938299
-num_termicas,XGBoost Simple,0.2770696137261961
-num_termicas,XGBoost Full,0.2164982144136814
-intensidad_termicas_mean_ms,LinearRegression,-0.1020396100179521
-intensidad_termicas_mean_ms,Ridge,-0.0524492015698911
+num_termicas,Ridge,0.1527140588938788
+num_termicas,Lasso,0.1452986347061865
+num_termicas,ElasticNet,0.1560472194813801
+num_termicas,RF Simple,0.2788024037299786
+num_termicas,RF Full,0.2516393402448925
+num_termicas,XGBoost Simple,0.2587787644342671
+num_termicas,XGBoost Full,0.2269647509629718
+intensidad_termicas_mean_ms,LinearRegression,-0.0925437366057524
+intensidad_termicas_mean_ms,Ridge,-0.0530372735629898
 intensidad_termicas_mean_ms,Lasso,-0.0594958615846805
 intensidad_termicas_mean_ms,ElasticNet,-0.0594958615846805
 intensidad_termicas_mean_ms,LinearRegression,0.0
@@ -83,20 +83,20 @@ intensidad_termicas_mean_ms,RF Simple,0.0
 intensidad_termicas_mean_ms,RF Full,0.0
 intensidad_termicas_mean_ms,XGBoost Simple,0.0
 intensidad_termicas_mean_ms,XGBoost Full,0.0
-tiempo_en_termicas_min,LinearRegression,0.3344724968731488
-tiempo_en_termicas_min,Ridge,0.2641974036274745
-tiempo_en_termicas_min,Lasso,0.3295635480934989
-tiempo_en_termicas_min,ElasticNet,0.3049209531823063
-tiempo_en_termicas_min,LinearRegression,0.1739768076982055
-tiempo_en_termicas_min,Ridge,0.3429038319191893
-tiempo_en_termicas_min,Lasso,0.4529224130463473
-tiempo_en_termicas_min,ElasticNet,0.4092269817188474
-tiempo_en_termicas_min,RF Simple,0.6502168465088722
-tiempo_en_termicas_min,RF Full,0.6292037490196444
-tiempo_en_termicas_min,XGBoost Simple,0.6264308083730266
-tiempo_en_termicas_min,XGBoost Full,0.7005468072615155
-tasa_ascenso_mean_ms,LinearRegression,-0.037818285896731
-tasa_ascenso_mean_ms,Ridge,-0.0241718589363602
+tiempo_en_termicas_min,LinearRegression,0.6264326668648814
+tiempo_en_termicas_min,Ridge,0.6287240465550972
+tiempo_en_termicas_min,Lasso,0.6283071192390444
+tiempo_en_termicas_min,ElasticNet,0.6051649287393457
+tiempo_en_termicas_min,LinearRegression,0.0221295992146122
+tiempo_en_termicas_min,Ridge,0.4779681598079311
+tiempo_en_termicas_min,Lasso,0.7144292422627305
+tiempo_en_termicas_min,ElasticNet,0.5520879401579392
+tiempo_en_termicas_min,RF Simple,0.6801782770800535
+tiempo_en_termicas_min,RF Full,0.6688987027231326
+tiempo_en_termicas_min,XGBoost Simple,0.739587775110479
+tiempo_en_termicas_min,XGBoost Full,0.7338200521608473
+tasa_ascenso_mean_ms,LinearRegression,-0.0587267104824729
+tasa_ascenso_mean_ms,Ridge,-0.027650591851233
 tasa_ascenso_mean_ms,Lasso,-0.0342375334221198
 tasa_ascenso_mean_ms,ElasticNet,-0.0342375334221198
 tasa_ascenso_mean_ms,LinearRegression,0.0
