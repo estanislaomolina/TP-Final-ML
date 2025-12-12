@@ -107,3 +107,12 @@ tasa_ascenso_mean_ms,RF Simple,0.0
 tasa_ascenso_mean_ms,RF Full,0.0
 tasa_ascenso_mean_ms,XGBoost Simple,0.0
 tasa_ascenso_mean_ms,XGBoost Full,0.0
+altura_max_m,LSTM (best fold),0.6594
+ganancia_altura_m,LSTM (best fold),0.6335
+duracion_min,LSTM (best fold),0.5239
+distancia_km,LSTM (best fold),0.6451
+velocidad_promedio_kmh,LSTM (best fold),0.4119
+num_termicas,LSTM (best fold),0.256
+intensidad_termicas_mean_ms,LSTM (best fold),-0.035
+tiempo_en_termicas_min,LSTM (best fold),0.5978
+tasa_ascenso_mean_ms,LSTM (best fold),-0.0785
