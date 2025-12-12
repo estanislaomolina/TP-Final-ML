@@ -1,10 +1,6 @@
 """
-data_processing.py
-==================
 Funciones para limpieza, preprocesamiento y split de datos.
 
-Autor: Estanislao
-Fecha: 2024
 """
 
 import pandas as pd

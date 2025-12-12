@@ -1,10 +1,7 @@
 """
-eda_functions.py
-================
+
 Funciones para análisis exploratorio de datos (EDA).
 
-Autor: Estanislao
-Fecha: 2024
 """
 
 import pandas as pd
@@ -31,21 +28,15 @@ def resumen_dataset(df):
     Args:
         df: DataFrame
     """
-    print("="*80)
     print("RESUMEN DEL DATASET")
-    print("="*80)
     print(f"\nDimensiones: {df.shape[0]} filas x {df.shape[1]} columnas")
     print(f"\nRango temporal: {df['fecha'].min().date()} a {df['fecha'].max().date()}")
     print(f"Días únicos: {df['fecha'].nunique()}")
     
-    print("\n" + "="*80)
     print("TIPOS DE DATOS")
-    print("="*80)
     print(df.dtypes.value_counts())
     
-    print("\n" + "="*80)
     print("VALORES FALTANTES")
-    print("="*80)
     missing = df.isnull().sum()
     if missing.sum() > 0:
         missing_pct = (missing / len(df) * 100).round(2)
@@ -55,7 +46,7 @@ def resumen_dataset(df):
         }).sort_values('pct_missing', ascending=False)
         print(missing_df)
     else:
-        print("✓ No hay valores faltantes")
+        print("No hay valores faltantes")
 
 
 def analizar_targets(df, targets_reg, target_clf=None):
@@ -68,13 +59,11 @@ def analizar_targets(df, targets_reg, target_clf=None):
         target_clf: Target de clasificación (opcional)
     """
     
-    print("="*80)
     print("ANÁLISIS DE TARGETS")
-    print("="*80)
     
     # Regresión
     if targets_reg:
-        print("\n▶ TARGETS DE REGRESIÓN:")
+        print("\nTARGETS DE REGRESIÓN:")
         for target in targets_reg:
             if target in df.columns:
                 print(f"\n{target}:")
@@ -167,9 +156,7 @@ def analizar_evolucion_temporal(df, targets):
         targets: Lista de targets
     """
     
-    print("="*80)
     print("EVOLUCIÓN TEMPORAL")
-    print("="*80)
     
     # Agrupar por fecha
     df_temporal = df.groupby('fecha')[targets].mean()

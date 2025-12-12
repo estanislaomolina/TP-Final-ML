@@ -119,9 +119,7 @@ def comparar_distribuciones(dev, test, targets):
     dev, test : DataFrames
     targets : list de columnas a comparar
     """
-    print("="*70)
     print("COMPARACIÓN DE DISTRIBUCIONES: Dev vs Test")
-    print("="*70)
     
     for target in targets:
         media_dev = dev[target].mean()
@@ -142,9 +140,9 @@ def comparar_distribuciones(dev, test, targets):
               f"(diff: {diff_std:.2f})")
         
         if diff_media_rel > 0.1:
-            print(f"  ⚠️ Diferencia > 10% en media")
+            print(f"Diferencia > 10% en media")
         else:
-            print(f"  ✓ Distribuciones similares")
+            print(f"Distribuciones similares")
 
 
 if __name__ == "__main__":
