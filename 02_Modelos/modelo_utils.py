@@ -204,9 +204,7 @@ def entrenar_baseline_hibrido(X_dev, y_dev, X_test, y_test, targets_reg, modelo_
     resultados = []
     modelos_seleccionados = {}
     
-    print(f"\n{'='*70}")
     print(f"MODELO HÍBRIDO - Anti R² Negativo")
-    print('='*70)
     print("Estrategia: Si modelo da R² < 0 → usar DummyRegressor (R² = 0)\n")
     
     for target in targets_reg:
@@ -258,7 +256,7 @@ def entrenar_baseline_hibrido(X_dev, y_dev, X_test, y_test, targets_reg, modelo_
         print(f"  Test: R² = {metrics_test['R2']:.4f}")
         
         if metrics_test['R2'] < 0:
-            print(f"  ⚠️ R² negativo detectado - REVISAR")
+            print(f"R² negativo detectado - REVISAR")
     
     return pd.DataFrame(resultados), modelos_seleccionados
 
@@ -282,9 +280,7 @@ def entrenar_baseline(X_dev, y_dev, X_test, y_test, targets_reg, modelos_dict):
     modelos_entrenados = {nombre: {} for nombre in modelos_dict.keys()}
     
     for nombre_modelo, modelo_class in modelos_dict.items():
-        print(f"\n{'='*70}")
         print(f"{nombre_modelo}")
-        print('='*70)
         
         for target in targets_reg:
             # Entrenar (manejar tanto clases como callables)
